@@ -21,7 +21,7 @@ TsCtr.editTask = async(req,res) => {
     const new_task = {
         descripcion:req.body.descripcion
     }
-    connect.findByIdAndUpdate(req.params.id,{set: new_task}, {new:true});
+    await connect.findByIdAndUpdate(req.params.id,{$set: new_task}, {new:true});
     res.json("Task Updated");
 }
 
