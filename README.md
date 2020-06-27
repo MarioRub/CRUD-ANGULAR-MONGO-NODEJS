@@ -1,9 +1,9 @@
-# Tasks CRUB
+# Tasks CRUD
 
 ### This was created using MongoDB, NodeJS and AngularJS.
 
-# Use
+# Usage
 
-### To use the API just run `npm install` in `./server`.
+### To use the API Backend just run `npm install` and `npm run start` in `./server`.
 
-### To use AngularJS just run `ng serve` in `./Task-CRUD`.
+### To use the AngularJS Frontend just run `ng serve` in `./Task-CRUD`.
