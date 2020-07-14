@@ -4,11 +4,11 @@ const { mongoose } = require("./db")
 const cors =require("cors");
 
 app.use(express.json());
-app.use(cors({origin: 'http://localhost:4200'}));
+app.use(cors({origin: 'http://localhost:3000'}));
 
 
 app.use("/", require("./server/route/routes.js"));
 
-app.listen(3000,(req,res)=>{
+app.listen(3001,(req,res)=>{
     console.log("Servidor Listo");
 });
