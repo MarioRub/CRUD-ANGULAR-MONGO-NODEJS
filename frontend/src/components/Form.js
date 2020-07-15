@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import '../App.css';
 import TextField from '@material-ui/core/TextField';
@@ -13,76 +12,97 @@ import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
-
 
 const baseUrl = "http://localhost:3001/";
 
-const onClickDelete =(id) => {
+const onClickDelete = (id) => {
 
   axios.delete(`${baseUrl}${id}`)
-  .then(res => {
-  alert("Borrada con Exito");
-  console.log(id);
-  });
- 
-    
+    .then(res => {
+      alert("Delete Sucessfull!");
+    });
+
 }
 
+const PostTask = (newTask) => (
+
+  axios.post(baseUrl, newTask)
+    .then(response => {
+      alert("Task Created Sucessfully!")
+    })
+    .catch(error => {
+      alert("Error :(")
+    })
+)
+
+const UpdateTask = (newTask, _id) => (
+
+  axios.put(`${baseUrl}${_id}`, {
+      descripcion: newTask.descripcion
+    })
+    .then(response => {
+      alert("Update Succesfull!")
+    })
+    .catch(error => {
+      alert("Error :(")
+    })
+)
+
 class Form extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
       isLoaded: false,
       items: [],
+      toEdit: [],
+      descripcion: null,
     };
+    this.updateInputdescripcion = this.updateInputdescripcion.bind(this);
+    
+  };
 
-  }
   componentWillMount() {
-
-    fetch(baseUrl)
-
-      .then(res => res.json())
-      .then(json => {
-        console.log("Fetch Realizado")
-        this.setState({
-          isLoaded: true,
-          items: json,
-          toEdit: json,
-        })
-      });
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.items !== this.state.items){
     fetch(baseUrl)
     .then(res => res.json())
     .then(json => {
-      console.log("Fetch Realizado")
       this.setState({
         isLoaded: true,
         items: json,
-        toEdit: json,
       })
     });
   }
+  componentDidUpdate(prevProps, prevState) {
+
+    if (prevState.descripcion !== this.state.descripcion) {
+      fetch(baseUrl)
+      .then(res => res.json())
+      .then(json => {
+        this.setState({
+          isLoaded: true,
+          items: json,
+        })
+      });
+    }
   }
 
-  onClickEdit(e, item) {
-    // set state es la función mágica de react que te permite cambiar valores de forma reactiva
-    this.setState({ toEdit: item });
+  onClickEdit(item) {
+    this.setState({ descripcion: item.descripcion, toEdit: item });
   }
 
   render() {
+
+    const newTask = { descripcion: this.state.descripcion };
     var { isLoaded, items, toEdit } = this.state;
+
     if (!isLoaded) {
       return <div><CircularProgress size={80} /></div>
     } else {
       return (
-        <div  >
+        <div className="App">
           <form noValidate autoComplete="off" style={{ margin: 8 }} fullWidth>
-
             <TextField
               id="standard-full-width"
               label="Add a new Task"
@@ -90,46 +110,52 @@ class Form extends Component {
               placeholder="Task"
               fullWidth
               margin="normal"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={this.state.toEdit.descripcion}
+              InputLabelProps={{ shrink: true }}
+              value={ this.state.descripcion }
+              onChange={ this.updateInputdescripcion }
             />
-
-            <Button variant="outlined" color="primary">
-              Guardar
-                    </Button>
+            <Button style = { {margin:8 }}variant="outlined" color="primary" onClick={() => PostTask(newTask)}>
+              Save
+            </Button>
+            <Button variant="outlined" color="primary" onClick={() => UpdateTask(newTask, toEdit._id)}>
+              Update
+            </Button>
           </form>
 
           <TableContainer component={Paper}>
             <Table aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>task</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                  <TableCell>Task Descriptions</TableCell>
+                  <TableCell align="right">Task Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {items.map((item) => (
-                  <TableRow key={item.descripcion}>
+                  <TableRow key={ item.descripcion }>
                     <TableCell component="th" scope="row">
-                      {item.descripcion}
+                      { item.descripcion }
                     </TableCell>
                     <TableCell align="right">
-                      <FormControlLabel control={<Checkbox color="secondary" name="Finished" value="yes" />} />
-                      <a onClick={(e) => onClickDelete(item._id)} ><DeleteIcon /></a>
-                      <a onClick={(e) => this.onClickEdit(e, item)} ><EditIcon /></a>
+                      <IconButton aria-label="Delete" onClick={() => onClickDelete(item._id)} >
+                        < DeleteIcon/>
+                      </IconButton>
+                      <IconButton aria-label="Update" onClick={() => this.onClickEdit(item)} >
+                        <EditIcon/>
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-
         </div>
       )
     }
+  }
+  updateInputdescripcion(event) {
 
+    this.setState({ descripcion: event.target.value })
   }
 
 }

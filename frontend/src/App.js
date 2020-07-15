@@ -9,8 +9,8 @@ function App() {
 
   return (
     <div className="App" >
-      <Route exact path='/' component={Home} exact />
-      <Route exact path='/callback' component={Callback} exact />
+      <Route exact path='/' component={Home} />
+      <Route exact path='/callback' component={Callback} />
     </div>
   )
 }
