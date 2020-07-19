@@ -14,6 +14,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
+import swal from 'sweetalert';
 
 const baseUrl = "http://localhost:3001/";
 
@@ -21,7 +22,7 @@ const onClickDelete = (id) => {
 
   axios.delete(`${baseUrl}${id}`)
     .then(res => {
-      alert("Delete Sucessfull!");
+      swal("Good job!", "Task Succesfully Deleted!", "success");
     });
 
 }
@@ -30,23 +31,23 @@ const PostTask = (newTask) => (
 
   axios.post(baseUrl, newTask)
     .then(response => {
-      alert("Task Created Sucessfully!")
+      swal("Good job!", "Task Succesfully Created!", "success");
     })
     .catch(error => {
-      alert("Error :(")
+      swal("Something went wrong!", "Sorry :(", "error");
     })
 )
 
 const UpdateTask = (newTask, _id) => (
 
   axios.put(`${baseUrl}${_id}`, {
-      descripcion: newTask.descripcion
-    })
+    descripcion: newTask.descripcion
+  })
     .then(response => {
-      alert("Update Succesfull!")
+      swal("Good job!", "Task Succesfully Updated!", "success");
     })
     .catch(error => {
-      alert("Error :(")
+      swal("Something went wrong!", "Sorry :(", "error");
     })
 )
 
@@ -61,23 +62,10 @@ class Form extends Component {
       descripcion: null,
     };
     this.updateInputdescripcion = this.updateInputdescripcion.bind(this);
-    
   };
 
-  componentWillMount() {
+  componentDidMount() {
     fetch(baseUrl)
-    .then(res => res.json())
-    .then(json => {
-      this.setState({
-        isLoaded: true,
-        items: json,
-      })
-    });
-  }
-  componentDidUpdate(prevProps, prevState) {
-
-    if (prevState.descripcion !== this.state.descripcion) {
-      fetch(baseUrl)
       .then(res => res.json())
       .then(json => {
         this.setState({
@@ -85,6 +73,19 @@ class Form extends Component {
           items: json,
         })
       });
+  }
+  componentDidUpdate(prevProps, prevState) {
+
+    if (prevState.descripcion !== this.state.descripcion) {
+      fetch(baseUrl)
+        .then(res => res.json())
+        .then(json => {
+          console.log("Fetch");
+          this.setState({
+            isLoaded: true,
+            items: json,
+          })
+        });
     }
   }
 
@@ -111,10 +112,10 @@ class Form extends Component {
               fullWidth
               margin="normal"
               InputLabelProps={{ shrink: true }}
-              value={ this.state.descripcion }
-              onChange={ this.updateInputdescripcion }
+              value={this.state.descripcion}
+              onChange={this.updateInputdescripcion}
             />
-            <Button style = { {margin:8 }}variant="outlined" color="primary" onClick={() => PostTask(newTask)}>
+            <Button style={{ margin: 8 }} variant="outlined" color="primary" onClick={() => PostTask(newTask)}>
               Save
             </Button>
             <Button variant="outlined" color="primary" onClick={() => UpdateTask(newTask, toEdit._id)}>
@@ -126,22 +127,22 @@ class Form extends Component {
             <Table aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Task Descriptions</TableCell>
-                  <TableCell align="right">Task Actions</TableCell>
+                  <TableCell><strong>Task Descriptions</strong></TableCell>
+                  <TableCell align="right"><strong>Task Actions</strong></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {items.map((item) => (
-                  <TableRow key={ item.descripcion }>
+                  <TableRow key={item.descripcion}>
                     <TableCell component="th" scope="row">
-                      { item.descripcion }
+                      {item.descripcion}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton aria-label="Delete" onClick={() => onClickDelete(item._id)} >
-                        < DeleteIcon/>
+                        < DeleteIcon />
                       </IconButton>
                       <IconButton aria-label="Update" onClick={() => this.onClickEdit(item)} >
-                        <EditIcon/>
+                        <EditIcon />
                       </IconButton>
                     </TableCell>
                   </TableRow>
